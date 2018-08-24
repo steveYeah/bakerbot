@@ -42,7 +42,7 @@ def choose_baker(channel, user):
     slack_client.api_call(
         'chat.postMessage',
         channel=channel,
-        text=f'<!here>, This weeks Star Baker is {dots}'
+        text=f'<!here>, This weeks Star Baker is {dots}',
         as_user=True
     )
 
