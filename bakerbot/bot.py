@@ -24,7 +24,7 @@ def choose_baker(channel, user):
     slack_client.api_call(
         'chat.postMessage',
         channel=channel,
-        text='<@{}>, This weeks Star Baker is.......'.format(user),
+        text='<!here>, This weeks Star Baker is.......'.format(user),
         as_user=True
     )
 
