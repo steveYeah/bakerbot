@@ -7,6 +7,7 @@ from slackclient import SlackClient
 
 CLIENT_KEY = os.environ.get("SLACK_BAKER_TOKEN")
 BOT_ID = os.environ.get("BAKER_BOT_ID")
+STEVE_ID = 'U1UN7J3E2'
 AT_BOT = '<@{}>'.format(BOT_ID)
 slack_client = SlackClient(CLIENT_KEY)
 
@@ -20,6 +21,12 @@ def choose_baker(channel, user):
 
     bakers = channel_data['channel']['members']
     bakers.remove(BOT_ID)
+
+    # allow steve to be chosen 5% of the time
+    steve_in = random.randrange(100) < 5
+    if not steve_in:
+        bakers.remove(STEVE_ID)
+
     baker = random.choice(bakers)
     slack_client.api_call(
         'chat.postMessage',
