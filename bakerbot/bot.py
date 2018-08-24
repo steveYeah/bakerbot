@@ -27,6 +27,16 @@ def choose_baker(channel, user):
     if not steve_in:
         bakers.remove(STEVE_ID)
 
+    if not bakers:
+        slack_client.api_call(
+            'chat.postMessage',
+            channel=channel,
+            text='<@{}>, I cannot do that'.format(user),
+            as_user=True
+        )
+
+        return
+
     baker = random.choice(bakers)
     slack_client.api_call(
         'chat.postMessage',
