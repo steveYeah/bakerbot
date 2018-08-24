@@ -24,6 +24,7 @@ def choose_baker(channel, user):
 
     # allow steve to be chosen 5% of the time
     steve_in = random.randrange(100) < 5
+    dots = '.' * 10 if steve_in else '.' * 5
     if not steve_in:
         bakers.remove(STEVE_ID)
 
@@ -41,7 +42,7 @@ def choose_baker(channel, user):
     slack_client.api_call(
         'chat.postMessage',
         channel=channel,
-        text='<!here>, This weeks Star Baker is.......'.format(user),
+        text=f'<!here>, This weeks Star Baker is {dots}'
         as_user=True
     )
 
