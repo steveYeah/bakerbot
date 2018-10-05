@@ -88,7 +88,7 @@ def pick(channel, user, chosen):
     bakers = _get_bakers(channel)
 
     if chosen not in bakers:
-        message = f'<@{user}> <@{chosen}> is not in this channel..'
+        message = f'<@{user}> <{chosen}> is not in this channel..'
     else:
         next_baker = chosen
         message = f'Done and done'
