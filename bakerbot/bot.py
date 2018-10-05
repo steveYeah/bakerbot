@@ -31,6 +31,10 @@ def choose_baker(channel, user):
     baker = None
     global next_baker
 
+    # allow steve to be chosen 5% of the time
+    steve_in = random.randrange(100) < 5
+    dots = '.' * 10 if steve_in else '.' * 5
+
     if next_baker:
         if next_baker not in bakers:
             message = f'<@{next_baker}> seems to have left.. I\'ll choose someone else'
@@ -40,14 +44,13 @@ def choose_baker(channel, user):
                 text=message,
                 as_user=True
             )
+
         else:
             baker = next_baker
-            next_baker = None
+
+        next_baker = None
 
     if not baker:
-        # allow steve to be chosen 5% of the time
-        steve_in = random.randrange(100) < 5
-        dots = '.' * 10 if steve_in else '.' * 5
 
         if not steve_in:
             bakers.remove(STEVE_ID)
@@ -87,10 +90,12 @@ def pick(channel, user, chosen):
 
     bakers = _get_bakers(channel)
 
-    if chosen not in bakers:
-        message = f'<@{user}> <{chosen}> is not in this channel..'
+    chosen_code = re.sub("<@|>", '', chosen).upper()
+
+    if chosen_code not in bakers:
+        message = f'<@{user}> {chosen} is not in this channel..'
     else:
-        next_baker = chosen
+        next_baker = chosen_code
         message = f'Done and done'
 
     slack_client.api_call(
