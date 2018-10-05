@@ -86,12 +86,11 @@ def pick(channel, user, chosen):
     global next_baker
 
     bakers = _get_bakers(channel)
-    chosen_code = re.sub("<@{|}>", "", chosen)
 
-    if chosen_code not in bakers:
-        message = f'{chosen} is not in this channel..'
+    if chosen not in bakers:
+        message = f'<@{user}> <@{chosen}> is not in this channel..'
     else:
-        next_baker = chosen_code
+        next_baker = chosen
         message = f'Done and done'
 
     slack_client.api_call(
