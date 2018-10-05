@@ -29,6 +29,7 @@ def _get_bakers(channel):
 def choose_baker(channel, user):
     bakers = _get_bakers(channel)
     baker = None
+    global next_baker
 
     if next_baker:
         if next_baker not in bakers:
@@ -82,6 +83,8 @@ def choose_baker(channel, user):
 
 
 def pick(channel, user, chosen):
+    global next_baker
+
     bakers = _get_bakers(channel)
     chosen_code = re.sub("<@{|}>", "", chosen)
 
