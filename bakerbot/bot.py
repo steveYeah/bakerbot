@@ -88,7 +88,9 @@ def choose_baker(channel, user):
 def pick(channel, user, chosen):
     global next_baker
 
-    if user != STEVE_ID:
+    chosen_code = re.sub("<@|>", '', chosen).upper()
+
+    if (chosen_code != user) and (user != STEVE_ID):
         slack_client.api_call(
             'chat.postMessage',
             channel=channel,
@@ -99,7 +101,6 @@ def pick(channel, user, chosen):
 
     bakers = _get_bakers(channel)
 
-    chosen_code = re.sub("<@|>", '', chosen).upper()
 
     if chosen_code not in bakers:
         message = f'<@{user}> {chosen} is not in this channel..'
