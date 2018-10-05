@@ -88,6 +88,15 @@ def choose_baker(channel, user):
 def pick(channel, user, chosen):
     global next_baker
 
+    if user != STEVE_ID:
+        slack_client.api_call(
+            'chat.postMessage',
+            channel=channel,
+            text='Hahahaha, No..',
+            as_user=True
+        )
+        return
+
     bakers = _get_bakers(channel)
 
     chosen_code = re.sub("<@|>", '', chosen).upper()
