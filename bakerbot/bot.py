@@ -11,9 +11,10 @@ STEVE_ID = 'U1UN7J3E2'
 AT_BOT = '<@{}>'.format(BOT_ID)
 slack_client = SlackClient(CLIENT_KEY)
 
+next_baker = None
 
-def choose_baker(channel, user):
-    # choose a baker from the list
+
+def _get_bakers(channel):
     channel_data = slack_client.api_call(
       "channels.info",
       channel=channel,
@@ -22,23 +23,46 @@ def choose_baker(channel, user):
     bakers = channel_data['channel']['members']
     bakers.remove(BOT_ID)
 
-    # allow steve to be chosen 5% of the time
-    steve_in = random.randrange(100) < 5
-    dots = '.' * 10 if steve_in else '.' * 5
-    if not steve_in:
-        bakers.remove(STEVE_ID)
+    return bakers
 
-    if not bakers:
-        slack_client.api_call(
-            'chat.postMessage',
-            channel=channel,
-            text='<@{}>, I cannot do that'.format(user),
-            as_user=True
-        )
 
-        return
+def choose_baker(channel, user):
+    bakers = _get_bakers(channel)
+    baker = None
 
-    baker = random.choice(bakers)
+    if next_baker:
+        if next_baker not in bakers:
+            message = f'<@{next_baker}> seems to have left.. I\'ll choose someone else'
+            slack_client.api_call(
+                'chat.postMessage',
+                channel=channel,
+                text=message,
+                as_user=True
+            )
+        else:
+            baker = next_baker
+            next_baker = None
+
+    if not baker:
+        # allow steve to be chosen 5% of the time
+        steve_in = random.randrange(100) < 5
+        dots = '.' * 10 if steve_in else '.' * 5
+
+        if not steve_in:
+            bakers.remove(STEVE_ID)
+
+        if not bakers:
+            slack_client.api_call(
+                'chat.postMessage',
+                channel=channel,
+                text='<@{}>, I cannot do that'.format(user),
+                as_user=True
+            )
+
+            return
+
+        baker = random.choice(bakers)
+
     slack_client.api_call(
         'chat.postMessage',
         channel=channel,
@@ -57,8 +81,27 @@ def choose_baker(channel, user):
     )
 
 
+def pick(channel, user, chosen):
+    bakers = _get_bakers(channel)
+    chosen_code = re.sub("<@{|}>", "", chosen)
+
+    if chosen_code not in bakers:
+        message = f'{chosen} is not in this channel..'
+    else:
+        next_baker = chosen_code
+        message = f'Done and done'
+
+    slack_client.api_call(
+        'chat.postMessage',
+        channel=channel,
+        text=message,
+        as_user=True
+    )
+
+
 COMMANDS = {
     "choose": choose_baker,
+    "pick": pick,
 }
 
 
